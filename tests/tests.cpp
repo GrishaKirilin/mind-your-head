@@ -19,6 +19,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Includes:
 
+#include "utest_surrogate.hpp"
 #include "mind_core.hpp"
 #include "mind_util.hpp"
 
@@ -28,51 +29,6 @@
 #include <vector>
 #include <algorithm>
 #include <string>
-
-////////////////////////////////////////////////////////////////////////////////
-// Unit test surrogate. TODO: choose some standard framework.
-
-class unit_test
-{
-public:
-
-    unit_test( std::ostream &stream )
-        : log_stream_{ stream }
-    {}
-
-    virtual ~unit_test() {}
-
-    template<class... Args>
-    unit_test& section( std::string preface, Args... args )
-    {
-        log_stream_ << preface << "\n";
-        ( log_result( args ), ... );
-        log_stream_ << "\n";
-        return *this;
-    }
-
-    void flush_stat()
-    {
-        auto passed_cnt = std::count( stat_.begin(), stat_.end(), true );
-
-        log_stream_ << "results: "
-                    << passed_cnt << " tests passed, "
-                    << ( stat_.size() - passed_cnt ) << " tests failed\n"
-                    << std::endl;
-        stat_.clear();
-    }
-
-protected:
-
-    void log_result( bool passed )
-    {
-        log_stream_ << ( passed ? "[passed]" : "[failed]" )  << "\n";
-        stat_.push_back( passed );
-    }
-
-    std::ostream &log_stream_;
-    std::vector<bool> stat_; // sic!
-};
 
 ////////////////////////////////////////////////////////////////////////////////
 // Entry point
@@ -152,12 +108,9 @@ int main()
               is_same_set_v<foo<>, unique_t<foo<>>>,
               is_same_set_v<foo<float>, unique_t<foo<float>>>,
               is_same_set_v<bar<int>, unique_t<bar<int, int>>>,
-              is_same_set_v<bar<int, float>, unique_t<bar<int, int, float>>>
-              )
+              is_same_set_v<bar<int, float>, unique_t<bar<int, int, float>>> )
 
     .flush_stat();
-
-    std::cout << type_name<unique_t<foo<float>>>() << std::endl;
 
     return 0;
 }
