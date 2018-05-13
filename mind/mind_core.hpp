@@ -45,6 +45,8 @@ template<$class NewHead, class TList>
 using apply = decltype( impl::apply<NewHead>( std::declval<TList>() ) );
 
 ////////////////////////////////////////////////////////////////////////////////
+//
+//  JOIN
 
 namespace impl
 {
@@ -56,7 +58,12 @@ template<class TList0, class TList1>
 using join_t =
     decltype( impl::join( std::declval<TList0>(), std::declval<TList1>() ) );
 
+template<class TList0, class TList1>
+struct join { $def join_t<TList0, TList1> type; };
+
 ////////////////////////////////////////////////////////////////////////////////
+//
+//  IS_MEMBER
 
 namespace impl
 {
@@ -107,7 +114,12 @@ template<class TList> struct free_of
 template<class T, class TList>
 constexpr bool is_member_v = fn::is_member<TList>::$lambda<T>::value;
 
+template<class TList0, class TList1>
+struct is_member { enum { value = is_member_v<TList0, TList1> }; };
+
 ////////////////////////////////////////////////////////////////////////////////
+//
+//  APPEND, PREPEND
 
 namespace impl
 {
@@ -124,7 +136,12 @@ using append_t = decltype( impl::append<T>( std::declval<TList>() ) );
 template<class TList, class T>
 using prepend_t = decltype( impl::prepend<T>( std::declval<TList>() ) );
 
+template<class TList, class T> struct append  { $def append_t<TList, T> type; };
+template<class TList, class T> struct prepend { $def prepend_t<TList, T> type; };
+
 ////////////////////////////////////////////////////////////////////////////////
+//
+//  IF_ELSE (aka std::conditional)
 
 template<bool, class, class> struct if_else;
 
@@ -144,6 +161,8 @@ template<bool Test, class Then, class Else>
 using if_else_t = typename if_else<Test, Then, Else>::type;
 
 ////////////////////////////////////////////////////////////////////////////////
+//
+//  SELECT
 
 namespace impl
 {
@@ -176,12 +195,22 @@ $deduce select( Head<Ts...> ) -> typename select_by<Test, Head, Ts...>::type;
 template<$class Test, class TList>
 using select_t = decltype( impl::select<Test>( std::declval<TList>() ) );
 
+template<$class Test, class TList>
+struct select { $def select_t<Test, TList> type; };
+
 ////////////////////////////////////////////////////////////////////////////////
+//
+//  COMPLEMENT
 
 template<class TList0, class TList1>
 using complement_t = select_t<fn::free_of<TList1>::$lambda, TList0>;
 
+template<class TList0, class TList1>
+struct complement { $def complement_t<Test, TList> type; };
+
 ////////////////////////////////////////////////////////////////////////////////
+//
+//  ALL_TRUE
 
 namespace impl
 {
@@ -230,12 +259,15 @@ struct all_true
 template<$class Test, class TList>
 constexpr bool all_true_v = all_true<Test, TList>::value;
 
+////////////////////////////////////////////////////////////////////////////////
+//
+//  IS_SUBSET
+
 /// \class   `is_subset<class TA, class TB>`
-/// \brief   `value` is `true` if `is_subset<TA, TB>::value` if a type list `TB`
-///          is a subset of `TA`.
+/// \brief   `value` is `true` if a type list `TB` is a subset of `TA`.
 ///
-/// \tparam  TA  list of types.
-/// \tparam  TB  list of types.
+/// \tparam  TA list of types.
+/// \tparam  TB list of types.
 ///
 /// \details There is an `constexpr` alias `is_subset_v`.
 ///          Usage: Use `is_subset_v<foo<Ts...>, foo<Us...>>` to test
@@ -250,11 +282,20 @@ struct is_subset
 template<class TMinor, class TMajor>
 constexpr bool is_subset_v = is_subset<TMajor, TMinor>::value;
 
+////////////////////////////////////////////////////////////////////////////////
+//
+//  IS_SAME_SET
+
 template<class TList0, class TList1>
 constexpr bool is_same_set_v = is_subset_v<TList0, TList1>
                                && is_subset_v<TList1, TList0>;
 
+template<class TList0, class TList1>
+struct is_same_set { enum { value = is_same_set_v<TList0, TList1> }; };
+
 ////////////////////////////////////////////////////////////////////////////////
+//
+//  HEAD
 
 namespace impl
 {
@@ -265,10 +306,11 @@ $deduce head( Head<Ts...> ) -> typename Head<>;
 template<class TList>
 using head_t =  decltype( impl::head( std::declval<TList>() ) );
 
-template<class TList>
-struct head { $type head_t<TList> type; };
+template<class TList> struct head { $def head_t<TList> type; };
 
 ////////////////////////////////////////////////////////////////////////////////
+//
+//  LENGTH
 
 namespace impl
 {
@@ -289,6 +331,8 @@ template<class TList>
 constexpr size_t length_v = length<TList>::value;
 
 ////////////////////////////////////////////////////////////////////////////////
+//
+//  UNIQUE
 
 namespace impl
 {
@@ -315,10 +359,11 @@ $deduce unique_of( Head<Ts...> ) -> typename unique<Head<>, Ts...>::type;
 template<class TList>
 using unique_t = decltype( impl::unique_of( std::declval<TList>() ) );
 
-template<class TList>
-struct unique { $type unique_t<TList> type; };
+template<class TList> struct unique { $def unique_t<TList> type; };
 
 ////////////////////////////////////////////////////////////////////////////////
+//
+//  UNION_SET
 
 template<class TList0, class TList1>
 struct union_set
@@ -328,6 +373,9 @@ struct union_set
 
 template<class TList0, class TList1>
 using union_set_t = typename union_set<TList0, TList1>::type;
+
+template<class TList0, class TList1>
+struct union_set { $def union_t<TList0, TList1> type; };
 
 ////////////////////////////////////////////////////////////////////////////////
 } // mind
