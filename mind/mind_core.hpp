@@ -206,7 +206,7 @@ template<class TList0, class TList1>
 using complement_t = select_t<fn::free_of<TList1>::$lambda, TList0>;
 
 template<class TList0, class TList1>
-struct complement { $def complement_t<Test, TList> type; };
+struct complement { $def complement_t<TList0, TList1> type; };
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -373,9 +373,6 @@ struct union_set
 
 template<class TList0, class TList1>
 using union_set_t = typename union_set<TList0, TList1>::type;
-
-template<class TList0, class TList1>
-struct union_set { $def union_t<TList0, TList1> type; };
 
 ////////////////////////////////////////////////////////////////////////////////
 } // mind
