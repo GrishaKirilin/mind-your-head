@@ -300,7 +300,7 @@ struct is_same_set { enum { value = is_same_set_v<TList0, TList1> }; };
 namespace impl
 {
 template<$class Head, class... Ts>
-$deduce head( Head<Ts...> ) -> typename Head<>;
+$deduce head( Head<Ts...> ) -> Head<>;
 }
 
 template<class TList>
